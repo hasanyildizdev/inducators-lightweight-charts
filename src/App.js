@@ -1,23 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import GraphCandle from './indicators/graphCandle';
+//import GraphLine from './indicators/graphLine';
+//import GraphSMA from './indicators/SMA';
+import GraphRSI from './indicators/RSI';
+const symbol = 'BTCUSDT';
+const timeframe = "1m";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <div className='info'>
+          <h5 className='info_contents'>Symbol : {symbol}</h5>
+          <h5 className='info_contents'>Timeframe : {timeframe}</h5>
+        </div>
+        <GraphCandle symbol={symbol} timeframe={timeframe}/>
+        {/*<GraphLine symbol={symbol} timeframe={timeframe}/>  
+        <GraphSMA symbol={symbol} timeframe={timeframe}/>  */}
+        <GraphRSI symbol={symbol} timeframe={timeframe}/> 
     </div>
   );
 }
