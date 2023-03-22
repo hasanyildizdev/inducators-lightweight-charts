@@ -21,8 +21,17 @@ const GraphCandle = ({symbol,timeframe}) => {
                 vertLines: { color: '#2A2E39' },
                 horzLines: { color: '#2A2E39' },
               },
+              timeScale: {
+                // rightOffset: 12,
+                // barSpacing: 3,
+             },
             })
             const candles = chartDiv.current.chart.addCandlestickSeries();
+            const trendLineSeries = chartDiv.current.chart.addLineSeries({
+              color: 'red',
+              lineWidth: 2,
+              lineStyle: 0,
+           });
 
             candles.applyOptions({
               wickUpColor: 'rgb(8,153,129)',
@@ -32,6 +41,7 @@ const GraphCandle = ({symbol,timeframe}) => {
               borderVisible: false,
             });
 
+            
             function connectWebSocket() {
                 ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${timeframe}`);
                 ws.current.onopen = () => {
@@ -41,6 +51,15 @@ const GraphCandle = ({symbol,timeframe}) => {
                     try {
                       const data = await fetchBinanceData(symbol, timeframe);
                       candles.setData(data);
+
+                      //const max = Math.max(...data.map((candle) => candle.high));
+                      const min = Math.min(...data.map((candle) => candle.low));
+                      const close = data[data.length - 1].close;
+
+                      trendLineSeries.setData([
+                        { time: data[0].time, value: min  },
+                        { time: data[data.length - 1].time, value: close },
+                     ]);
                     } catch (error) {
                       console.error("Error fetching data:", error);
                     }
