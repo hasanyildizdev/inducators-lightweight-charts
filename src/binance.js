@@ -1,12 +1,12 @@
-export const fetchBinanceData = async (symbol, timeframe) => {
-    const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=1000`, { mode: 'cors'});
+export const fetchBinanceData = async (symbol, timeframe, limit) => {
+    const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=${limit}`, { mode: 'cors'});
     const json = await response.json();
 
     const data = json
       .map((entry) => {
         try {
           return {
-            time: entry[0],
+            time: parseInt(entry[0].toString().slice(0, 10)),
             open: parseFloat(entry[1]),
             high: parseFloat(entry[2]),
             low: parseFloat(entry[3]),

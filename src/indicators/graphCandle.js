@@ -2,8 +2,9 @@ import './style.css'
 import React, { useRef, useEffect } from 'react';
 import { createChart } from 'lightweight-charts';
 import {fetchBinanceData} from '../binance.js';
+import { Short } from '../functions/short';
 
-const GraphCandle = ({symbol,timeframe}) => {
+const GraphCandle = ({symbol,timeframe,limit}) => {
     const chartDiv = useRef(null);
     const ws = useRef(null);
 
@@ -12,9 +13,7 @@ const GraphCandle = ({symbol,timeframe}) => {
             chartDiv.current.chart = createChart(chartDiv.current, 
             { 
               layout: {
-                background: {
-                  color: '#171B26'
-                },
+                background: { color: '#171B26'},
                 textColor: '#ffffff'
               },
               grid: {
@@ -22,13 +21,15 @@ const GraphCandle = ({symbol,timeframe}) => {
                 horzLines: { color: '#2A2E39' },
               },
               timeScale: {
-                // rightOffset: 12,
-                // barSpacing: 3,
+                timeVisible: true,
+                secondsVisible: true,
              },
-            })
+            });
+
             const candles = chartDiv.current.chart.addCandlestickSeries();
+
             const trendLineSeries = chartDiv.current.chart.addLineSeries({
-              color: 'red',
+              color: 'yellow',
               lineWidth: 2,
               lineStyle: 0,
            });
@@ -49,17 +50,12 @@ const GraphCandle = ({symbol,timeframe}) => {
                 };
                 ws.current.onmessage = async (event) => {
                     try {
-                      const data = await fetchBinanceData(symbol, timeframe);
+                      const data = await fetchBinanceData(symbol, timeframe, limit);
                       candles.setData(data);
 
-                      //const max = Math.max(...data.map((candle) => candle.high));
-                      const min = Math.min(...data.map((candle) => candle.low));
-                      const close = data[data.length - 1].close;
+                      // Short 
+                      trendLineSeries.setData(Short(data));
 
-                      trendLineSeries.setData([
-                        { time: data[0].time, value: min  },
-                        { time: data[data.length - 1].time, value: close },
-                     ]);
                     } catch (error) {
                       console.error("Error fetching data:", error);
                     }
@@ -70,11 +66,11 @@ const GraphCandle = ({symbol,timeframe}) => {
             }
             connectWebSocket();
         }
-      },[symbol,timeframe]);
+      },[symbol,timeframe,limit]);
 
   return (
     <div className='bg'>
-      <div ref={chartDiv} style={{width:'800px',height:'350px'}}>
+      <div ref={chartDiv} style={{width:'800px',height:'450px'}}>
         <div style={{position:' absolute', height: '100%', "zIndex":'2',"paddingLeft":'20px'}}>
             <h4>Candle Graph</h4>
         </div>
