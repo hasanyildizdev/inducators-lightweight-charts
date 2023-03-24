@@ -54,7 +54,7 @@ const GraphCandle = ({symbol,timeframe,limit}) => {
                       candles.setData(data);
 
                       // Short 
-                      trendLineSeries.setData(Short(data));
+                      trendLineSeries.setData(Short(data,limit));
 
                     } catch (error) {
                       console.error("Error fetching data:", error);

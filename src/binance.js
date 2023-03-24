@@ -1,9 +1,11 @@
 export const fetchBinanceData = async (symbol, timeframe, limit) => {
     const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=${limit}`, { mode: 'cors'});
+    //https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1s&limit=1
     const json = await response.json();
 
     const data = json
       .map((entry) => {
+       // console.log(entry[0].toString().slice(0, 10));
         try {
           return {
             time: parseInt(entry[0].toString().slice(0, 10)),
