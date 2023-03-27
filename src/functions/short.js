@@ -11,13 +11,13 @@ export const Short = (data,limit) =>{
         var tanAlpha = 0;
         var nextPositions = [];
         var sizeNextPositions = 0;
-        var i = 0;
         let trendLineData = [];
+        var i = 0;
 
-        // This finds of high values
+        // This pulls of high values from data
         for (i = 0; i < data.length; i++) {  highValues[i] = data[i].high; } 
     
-        // This finds High1 Candle and it's Position
+        // This finds High Point 1 and it's Position
         for (i = 0; i < highValues.length; i++) {
             if (highValues[i] >= high1) {
                 high1 = highValues[i];
@@ -26,8 +26,8 @@ export const Short = (data,limit) =>{
             }
         } 
     
-        // This finds High2 Candle and it's Position
-        for (i = high1Position + 50; i < highValues.length; i++) {
+        // This finds High Point 2 and it's Position
+        for (i = high1Position + 20; i < highValues.length; i++) {
             if (highValues[i] >= high2) {
                 high2 = highValues[i];
                 high2Time = data[i].time;
@@ -38,10 +38,12 @@ export const Short = (data,limit) =>{
         // Trendline drawer
         try {
             // Put High1 and High2 inside trendline
-            trendLineData.push({ time: high1Time, value: high1 });
-            trendLineData.push({ time: high2Time, value: high2 });
+            if(high1Time !== null || high1 !== null || high2Time !== null || high2Time !== null){
+                trendLineData.push({ time: high1Time, value: high1 });
+                trendLineData.push({ time: high2Time, value: high2 });
+            }
 
-            // Calculations to find Next Positions
+            // Calculations of finding Next Positions
             Ly = high1 - high2;
             Lx = high2Position - high1Position;
             tanAlpha = Ly / Lx;
@@ -50,17 +52,21 @@ export const Short = (data,limit) =>{
                 var LxN = Lx + i + 1;
                 var LyN = tanAlpha * LxN;
                 nextPositions[i]= high1 - LyN;
-                if(high2Position + i + 1 < limit) {
-                     trendLineData.push({ time: data[ high2Position + i ].time, value: nextPositions[i] });
+                if(nextPositions[i] > data[high2Position + i].high ){
+                    trendLineData.push({ time: data[ high2Position + i ].time, value: nextPositions[i] });
                 }
-            }
-
-            console.log("high1Position: ",high1Position);
-            console.log("high2Position: ",high2Position);
+            } 
 
         } catch (error) {
             console.log(error);
         }
 
-       return trendLineData;      
+       return {
+            trendLineData : trendLineData,
+            high1 : high1,
+            high2 : high2,
+            high1Time : high1Time,  
+            high2Time : high2Time, 
+       };
+ 
 }
