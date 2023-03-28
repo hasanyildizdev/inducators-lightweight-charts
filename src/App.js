@@ -4,7 +4,7 @@ import GraphCandle from './indicators/graphCandle';
 //import GraphSMA from './indicators/SMA';
 //import GraphRSI from './indicators/RSI';
 const symbol = 'BTCUSDT';
-const timeframe = "1m";
+const timeframe = "4s";
 const limit = 1000;
 
 function App() {

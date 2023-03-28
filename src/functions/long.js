@@ -11,6 +11,10 @@ export const Long = (data,limit) =>{
     var sizeNextPositions = 0;
     let trendLineData = [];
     var i = 0;
+    let longCrossed = false;
+    let low1Cordinates = [];
+    let low2Cordinates = [];
+    let nextCordinates = [];
 
     // This pulls of high values from data
     for (i = 0; i < data.length; i++) {  lowValues[i] = data[i].low; } 
@@ -38,25 +42,37 @@ export const Long = (data,limit) =>{
 
     // Trendline drawer
     try {
-
         // Put High1 and High2 inside trendline
-        trendLineData.push({ time: low1Time, value: low1 });
-        trendLineData.push({ time: low2Time, value: low2 }); 
+        low1Cordinates.push({ time: low1Time, value: low1 });
+        low2Cordinates.push({ time: low2Time, value: low2 }); 
 
         // Calculations of finding Next Positions
         Ly = low1 - low2;
         Lx = low2Position - low1Position;
         tanAlpha = Ly / Lx;
         sizeNextPositions = data.length - low2Position;
-
         for (i = 0; i < sizeNextPositions; i++){
             var LxN = Lx + i + 1;
             var LyN = tanAlpha * LxN;
             nextPositions[i]= low1 - LyN;
             if(nextPositions[i] < data[low2Position + i].low ){
-                trendLineData.push({ time: data[ low2Position + i ].time, value: nextPositions[i] });
+                nextCordinates.push({ time: data[ low2Position + i ].time, value: nextPositions[i] });
             }
-        }  
+            else {
+                longCrossed = true;
+            }
+        }
+        
+        if(!longCrossed){
+            trendLineData.push(low1Cordinates);
+            trendLineData.push(low2Cordinates);
+            trendLineData.push(...nextCordinates);
+            console.log("Long no cross :)");
+        }
+        else{
+            longCrossed = false;
+            console.log("Long crossed!");
+        }
 
     } catch (error) {
         console.log(error);

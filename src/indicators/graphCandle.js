@@ -63,9 +63,32 @@ const GraphCandle = ({ symbol, timeframe, limit }) => {
             const data = await fetchBinanceData(symbol, timeframe, limit);
             candles.setData(data);
             
-            var short = Short(data,limit);
-            var long = Long(data,limit);
-            
+            let short = Short(data,limit);
+            if( short.high1 > 0 && short.high2 > 0 && short.high1Time > 0 && short.high2Time > 0 ) {
+                shortLine.setData(short.trendLineData);
+                const markersShort  = [
+                  {
+                      time: short.high1Time,
+                      position: 'aboveBar',
+                      color: '#FFFF00',
+                      shape: 'arrowDown',
+                      text: 'High1',
+                  },
+                  {
+                      time: short.high2Time,
+                      position: 'aboveBar',
+                      color: '#FFFF00',
+                      shape: 'arrowDown',
+                      text: 'High2',
+                  },
+              ]; 
+              shortLine.setMarkers(markersShort);
+            } else { 
+              shortLine.setData([]);
+              console.log("Short letiables has 0 value");
+            }
+
+/*             let long = Long(data,limit);
             if( long.low1 > 0 && long.low2 > 0 && long.low1Time > 0 && long.low2Time > 0 ){
                 longLine.setData(long.trendLineData)
                 const markersLong  = [
@@ -88,32 +111,9 @@ const GraphCandle = ({ symbol, timeframe, limit }) => {
             }
             else { 
               longLine.setData([]);
-              console.log("Long variables has 0 value");
+              console.log("Long letiables has 0 value");
             }
-
-            if( short.high1 > 0 && short.high2 > 0 && short.high1Time > 0 && short.high2Time > 0 ) {
-                shortLine.setData(short.trendLineData);
-                const markersShort  = [
-                  {
-                      time: short.high1Time,
-                      position: 'aboveBar',
-                      color: '#FFFF00',
-                      shape: 'arrowDown',
-                      text: 'High1',
-                  },
-                  {
-                      time: short.high2Time,
-                      position: 'aboveBar',
-                      color: '#FFFF00',
-                      shape: 'arrowDown',
-                      text: 'High2',
-                  },
-              ]; 
-              shortLine.setMarkers(markersShort);
-            } else { 
-              shortLine.setData([]);
-              console.log("Short variables has 0 value");
-            }
+ */
 
           } catch (error) {
             console.error("Error fetching data:", error);
